@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  name: prod-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: httpd
+  template:
+    metadata:
+      labels:
+        app: httpd
+    spec:
+      containers:
+        - name: httpd
+          image: public.ecr.aws/z4b5k5r7/httpd:2.4
+          command: ["/bin/sh"]
+          args: ["-c", "echo '<html> <head> <title>Prod App - Fargate</title> <style>body {margin-top: 40px; background-color: #333;} </style> </head><body> <div style=color:white;text-align:center> <h1>Prod App</h1> <h2>Fargate Demo</h2> <p>This application is now running on a container in AWS Fargate.</p> </div></body></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground"]
+          ports:
+            - name: http
+              containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: default
+  name: prod-service
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: httpd
+---
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: prod-tgb
+spec:
+  serviceRef:
+    name: prod-service
+    port: 80
+  targetGroupARN: arn:aws:elasticloadbalancing:region:account_id:targetgroup/prod-app/arn
+  targetType: ip
