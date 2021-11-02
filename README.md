@@ -36,6 +36,32 @@ Modify ```terraform.tfvars``` as needed for your configuration.
 - ```terraform plan```
 - ```terraform apply --auto-approve```
 
+### Basic commands to create EKS cluster
+
+This can be done easily via eksctl: https://eksctl.io/introduction/
+
+Creating Service Account Example:
+
+```
+eksctl create iamserviceaccount \
+  --cluster=dev-cluster \
+  --namespace=kube-system \
+  --name=aws-load-balancer-controller \
+  --attach-policy-arn=arn:aws:iam::<Account Number>:policy/AWSLoadBalancerControllerIAMPolicy \
+  --override-existing-serviceaccounts \
+  --approve -r us-west-2
+```
+
+Creating Cluster Example (fargate):
+
+```
+eksctl create cluster \
+  --fargate \
+  --vpc-private-subnets=subnet-0ed90397d44922222,subnet-0f0885c258f2941d9 \
+  --vpc-public-subnets=subnet-0ca9b3c1b624c2e6f,subnet-0bd82a88b1bba195d \
+  --name=dev-cluster -r us-west-2
+```
+
 ### AWS Load Balancer Controller for Centralized Ingress
 To deploy the aws load balancer controller and have it automatically update the Centralized ALB targetgroups, you will need to deploy the helm chart with a custom patch due to the following issue in the official image: https://github.com/kubernetes-sigs/aws-load-balancer-controller/pull/1862
 
