@@ -125,6 +125,12 @@ resource "aviatrix_fqdn" "eks_fqdn" {
       gw_name = gw_filter_tag_list.value.gw_name
     }
   }
+  
+  depends_on = [ module.egress_firenet ]
+  
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 #Create Security Group for Ingress ALB
