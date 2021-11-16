@@ -75,9 +75,9 @@ helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller \
 --set serviceAccount.create=false \
 --set serviceAccount.name=aws-load-balancer-controller \
 --set region=us-west-2 \
---set vpcId=<VPC ID of the Ingress Spoke> \  
---set image.repository=shoekstra/aws-alb-ingress-controller \
---set image.tag=latest-patch \  
+--set vpcId=<VPC ID of the Ingress Spoke> \
+--set image.repository=acjohnson/aws-alb-ingress-controller \
+--set image.tag=shoekstra-2.3.0-rebase \
 -n kube-system
 ```
 
